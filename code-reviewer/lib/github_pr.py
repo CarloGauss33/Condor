@@ -47,6 +47,10 @@ class GithubPR:
         return self.pr.get_commits()
     
     @functools.lru_cache(maxsize=None)
+    def get_commit_messages(self):
+        return [commit.commit.message for commit in self.get_commits()]
+    
+    @functools.lru_cache(maxsize=None)
     def get_last_commit(self):
         return self.get_commits().reversed[0]
 
@@ -65,7 +69,7 @@ class GithubPR:
         )
 
     def comment_on_pr(self, comment):
-        self.pr.create_review_comment(comment, self.get_last_commit(), '.')
+        self.pr.create_issue_comment(comment)
     
     def _set_repository_name_and_pr_number(self):
         owner, repo, number = self.__match_pull_request_url()
