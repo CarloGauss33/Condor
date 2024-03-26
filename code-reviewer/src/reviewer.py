@@ -1,6 +1,5 @@
-import json
-from lib.github_pr import GithubPR 
-from lib.openai_assistant import OpenAIAssistant 
+from .lib.github_pr import GithubPR 
+from .lib.openai_assistant import OpenAIAssistant
 
 class Reviewer:
     def __init__(self, openai_api_key, assistant_id, gh_api_key, pull_request_url):
