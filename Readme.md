@@ -33,6 +33,49 @@ docker run -e OPENAI_KEY=your_openai_api_key -e ASSISTANT_ID=your_assistant_id -
 
 Again, please replace `your_openai_api_key`, `your_assistant_id`, `your_github_api_key`, and `url_of_the_pull_request` with your actual OpenAI API key, OpenAI Assistant ID, GitHub API key, and the URL of the PR you want to review, respectively.
 
+## Running Condor as a GitHub Action
+
+Condor can also be run as a GitHub Action. This allows it to automatically review pull requests when they are created.
+
+To set up the Condor GitHub Action in any repository, follow these steps:
+
+1. Create a new file in your repository at the following path: `.github/workflows/condor_review.yml`
+
+2. Copy the content from the [condor_review.yml](https://github.com/CarloGauss33/Condor/blob/main/integrations/github-actions/condor_review.yml) into your new file. The content should look like this:
+
+```yml
+name: Condor Code Review
+
+on: [pull_request]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install condor_code_reviewer
+
+    - name: Run Condor
+      run: condor --openai-key ${{ secrets.OPENAI_KEY }} --gh-api-key ${{ secrets.GH_API_KEY }}  --assistant-id ${{ secrets.ASSISTANT_ID }} --pull-request-url ${{ github.event.pull_request.html_url }}
+```
+
+3. You need to set up the following secrets in your GitHub repository: `OPENAI_KEY`, `GH_API_KEY`, and `ASSISTANT_ID`. These secrets should contain your OpenAI API key, GitHub API key, and OpenAI Assistant ID, respectively. To set up secrets, go to your repository's settings, then click on "Secrets", and then "New repository secret".
+
+4. Once you've set up the secrets and added the workflow file, the GitHub Action will automatically run whenever a pull request is created in your repository.
+
+Please note that this GitHub Action is designed to work with the Condor automated PR review tool. If you haven't already, you'll need to set up Condor as described in the [Condor README](https://github.com/CarloGauss33/condor/blob/main/README.md).
+
 ## Development
 
 Condor is implemented as a Python class `Reviewer` in the `code-reviewer/reviewer.py` file. To use it, you need to initialize an instance of the `Reviewer` class with the necessary API keys and the URL of the PR you want to review.
