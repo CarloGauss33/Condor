@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='code_reviewer',
+    name='condor',
     version='0.1',
     packages=find_packages(),
     install_requires=[
@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'review_pull_request=src.cli:main',
+            'condor=src.cli:main',
         ],
     },
 )

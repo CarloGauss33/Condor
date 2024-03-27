@@ -8,7 +8,7 @@ DEFAULT_GH_API_KEY = os.getenv('GH_API_KEY')
 DEFAULT_PR_URL = os.getenv('PR_URL')
 
 def _show_help():
-    print('Usage: code-reviewer [options]')
+    print('Usage: condor [options]')
     print('Options:')
     print('  --openai-key <key>      OpenAI API key.')
     print('  --assistant-id <id>     OpenAI assistant ID.')
