@@ -12,7 +12,28 @@ Condor is an automated Pull Request (PR) review tool designed to provide persona
 - **CI/CD Integration (Coming Soon)**: Condor will soon support integration with Continuous Integration/Continuous Deployment (CI/CD) systems, allowing automated reviews to be triggered by events such as PR creation or code push.
 - **Docker Support (Coming Soon)**: We are working on a Docker runner for Condor, which will make it even easier to deploy and run in any environment.
 
-## How to Use
+## Running Condor Locally
+
+To run Condor locally, you need to install the required Python packages and set up the necessary environment variables. Here are the steps:
+
+1. Install the module
+`pip install -e code-reviewer`
+
+2. Run!
+`condor OPENAI_KEY ASSISTANT_ID GH_API_KEY PR_URL`
+
+## Running Condor with Docker
+
+Condor is also available as a Docker image on DockerHub. You can pull and run the Docker image with the following commands:
+
+```sh
+docker pull carlogauss33/condor
+docker run -e OPENAI_KEY=your_openai_api_key -e ASSISTANT_ID=your_assistant_id -e GH_API_KEY=your_github_api_key -e PR_URL=url_of_the_pull_request carlogauss33/condor
+```
+
+Again, please replace `your_openai_api_key`, `your_assistant_id`, `your_github_api_key`, and `url_of_the_pull_request` with your actual OpenAI API key, OpenAI Assistant ID, GitHub API key, and the URL of the PR you want to review, respectively.
+
+## Development
 
 Condor is implemented as a Python class `Reviewer` in the `code-reviewer/reviewer.py` file. To use it, you need to initialize an instance of the `Reviewer` class with the necessary API keys and the URL of the PR you want to review.
 
