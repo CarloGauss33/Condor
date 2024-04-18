@@ -1,3 +1,4 @@
+import re
 from .lib.github_pr import GithubPR 
 from .lib.openai_assistant import OpenAIAssistant
 
@@ -35,8 +36,17 @@ class Reviewer:
             message = f"Reviewing file: {filename}.\nDiff:\n\n{diff}"
 
             response = self.assistant.add_and_retrieve_message(message, "user")
+
+            first_change_line = self._get_first_change_line(diff)
             if response and response != 'APIError: No response':
-                self.gh.comment_on_file(filename, response, 1)
+                self.gh.comment_on_file(filename, response, first_change_line)
+
+    def _get_first_change_line(self, diff):
+        match = re.search(r'@@ -\d+,\d+ \+(\d+),', diff)
+        if match:
+            return int(match.group(1))
+        else:
+            return 1
 
     def summary_review(self):
         summary = self.assistant.add_and_retrieve_message("Summary Review", "user")
