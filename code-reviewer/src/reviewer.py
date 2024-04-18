@@ -21,6 +21,8 @@ class Reviewer:
 
     def add_pr_description(self):
         message = f"Pull Request Description: {self.gh.pr.title}\n\n{self.gh.pr.body}"
+        message += f"\n\nPR Author: @{self.gh.pr.user.login}"
+
         self.assistant.add_message(message, "user")
 
     def add_commit_messages(self):
