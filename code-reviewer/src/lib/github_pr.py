@@ -8,12 +8,12 @@ import functools
 MAX_SUPPORTED_CHANGES = 500
 
 REVIEWABLE_FILES = [
-    '*.md',
-    '*.py',
-    '*.html',
-    '*.rb',
-    '*.js',
-    '*.ts'
+    '*.md', '*.py', '*.html',
+    '*.rb', '*.c', '*.cpp',
+    '*.h', '*.go', '*.js',
+    '*.ts', '*.css', '*.scss',
+    '*.json', '*.yml', '*.tsx',
+    '*.jsx', '*.java',
 ]
 
 class GithubPR:
