@@ -2,6 +2,8 @@ import re
 from .lib.github_pr import GithubPR 
 from .lib.openai_assistant import OpenAIAssistant
 
+MAX_FULL_FILE_SIZE = 5000
+
 class Reviewer:
     def __init__(self, openai_api_key, assistant_id, gh_api_key, pull_request_url):
         self.gh = GithubPR(gh_api_key, pull_request_url)
@@ -32,9 +34,12 @@ class Reviewer:
 
     def review_files(self):
         for filename in self.gh.get_modified_files():
+            content = self.gh.get_original_file_content(filename)
+            if (content) and (len(content) > MAX_FULL_FILE_SIZE):
+                content = content[:MAX_FULL_FILE_SIZE] + '...TRUNCATED'
             diff = self.gh.get_file_diff(filename)
-            message = f"Reviewing file: {filename}.\nDiff:\n\n{diff}"
 
+            message = f"Reviewing file: {filename}.\n\nOriginal File Content:\n\n{content}\n\nDiff:\n\n{diff}"
             response = self.assistant.add_and_retrieve_message(message, "user")
 
             first_change_line = self._get_first_change_line(diff)

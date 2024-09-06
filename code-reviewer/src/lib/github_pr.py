@@ -5,15 +5,14 @@ import fnmatch
 from github import Github, Auth
 import functools
 
-MAX_SUPPORTED_CHANGES = 500
+MAX_SUPPORTED_CHANGES = 1500
 
 REVIEWABLE_FILES = [
     '*.md', '*.py', '*.html',
     '*.rb', '*.c', '*.cpp',
     '*.h', '*.go', '*.js',
     '*.ts', '*.css', '*.scss',
-    '*.json', '*.yml', '*.tsx',
-    '*.jsx', '*.java',
+    '*.tsx', '*.jsx', '*.java',
 ]
 
 class GithubPR:
@@ -34,9 +33,17 @@ class GithubPR:
         return self.get_repo().get_pull(self.pull_request_number)
     
     @functools.lru_cache(maxsize=None)
+    def get_files(self):
+        return list(self.pr.get_files())
+    
+    def get_file(self, filename):
+        matching_file = next((file for file in self.get_files() if file.filename == filename), None)
+        return matching_file
+    
+    @functools.lru_cache(maxsize=None)
     def get_modified_files(self):
         files = {}
-        for file in self.pr.get_files():
+        for file in self.get_files():
             if self.__should_review_file(file):
                 files[file.filename] = file
 
@@ -54,11 +61,24 @@ class GithubPR:
     def get_last_commit(self):
         return self.get_commits().reversed[0]
 
-    def get_file_content(self, filename):
-        return self.get_repo().get_contents(filename).decoded_content.decode('utf-8')
+    def get_original_file_content(self, filename):
+        file = self.get_file(filename)
+        if (not file) or (file.status == 'added'):
+            return ''
+        
+        return self.get_repo().get_contents(filename, ref=self.pr.base.sha).decoded_content.decode()
     
     def get_file_diff(self, filename):
         return self.get_modified_files()[filename].patch
+    
+    def get_pr_diff(self):
+        return self.get_last_commit().files
+    
+    def get_languages_of_repo(self):
+        return self.get_repo().get_languages()
+    
+    def get_total_pr_size(self):
+        return self.pr.additions + self.pr.deletions
     
     def comment_on_file(self, filename, comment, line=1):
         self.pr.create_review_comment(
